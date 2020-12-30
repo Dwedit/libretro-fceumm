@@ -1189,7 +1189,7 @@ SFORMAT FCEUSND_STATEINFO[] = {
 	{ &lq_tcout, sizeof(lq_tcout) | FCEUSTATE_RLSB, "TCOU"},
 	
 	//wave buffer is used for filtering, only need first 17 values from it
-	{ &Wave, 32 * sizeof(int32), "WAVE"},
+	{ &Wave, 24 * sizeof(int32), "WAVE"},
 { 0 }
 };
 

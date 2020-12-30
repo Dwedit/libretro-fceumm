@@ -84,7 +84,7 @@ typedef long long int64;
 		#define FASTAPASS(x)
 		#define FP_FASTAPASS(x)
 	#endif
-#elif MSVC
+#elif MSVC | _MSC_VER
 	#define FP_FASTAPASS(x)
 	#define FASTAPASS(x) __fastcall
 #else
