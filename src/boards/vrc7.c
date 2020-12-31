@@ -22,7 +22,7 @@
 #include "emu2413.h"
 
 static int32 dwave = 0;
-static OPLL *VRC7Sound = NULL;
+static OPLL* VRC7Sound = NULL;
 static uint8 vrc7idx, preg[3], creg[8], mirr;
 static uint8 IRQLatch, IRQa, IRQd;
 static int32 IRQCount, CycleCount;
@@ -40,6 +40,7 @@ static SFORMAT StateRegs[] =
 	{ &IRQLatch, 1, "IRQL" },
 	{ &IRQCount, 4, "IRQC" },
 	{ &CycleCount, 4, "CYCC" },
+	{ &VRC7Sound, sizeof(*VRC7Sound) | FCEUSTATE_INDIRECT, "VRC7"  },
 	{ 0 }
 };
 

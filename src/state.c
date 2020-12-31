@@ -97,23 +97,26 @@ static int SubWrite(memstream_t *mem, SFORMAT *sf)
       }
 
       acc += 8; /* Description + size */
-      acc += sf->s & (~RLSB);
+      acc += sf->s & (~FCEUSTATE_FLAGS);
 
       if(mem) /* Are we writing or calculating the size of this block? */
       {
          memstream_write(mem, sf->desc, 4);
-         write32le_mem(sf->s & (~RLSB), mem);
+         write32le_mem(sf->s & (~FCEUSTATE_FLAGS), mem);
 
 #ifdef MSB_FIRST
          if(sf->s & RLSB)
-            FlipByteOrder((uint8 *)sf->v, sf->s & (~RLSB));
+            FlipByteOrder((uint8 *)sf->v, sf->s & (~FCEUSTATE_FLAGS));
 #endif
-         memstream_write(mem, (uint8 *)sf->v, sf->s & (~RLSB));
+         if (sf->s & FCEUSTATE_INDIRECT)
+             memstream_write(mem, *(uint8**)sf->v, sf->s & (~FCEUSTATE_FLAGS));
+         else
+             memstream_write(mem, (uint8*)sf->v, sf->s & (~FCEUSTATE_FLAGS));
 
          /* Now restore the original byte order. */
 #ifdef MSB_FIRST
          if(sf->s & RLSB)
-            FlipByteOrder((uint8 *)sf->v, sf->s & (~RLSB));
+            FlipByteOrder((uint8 *)sf->v, sf->s & (~FCEUSTATE_FLAGS));
 #endif
       }
       sf++;
@@ -150,7 +153,7 @@ static SFORMAT *CheckS(SFORMAT *sf, uint32 tsize, char *desc)
       }
       if (!strncmp(desc, sf->desc, 4))
       {
-         if (tsize != (sf->s & (~RLSB)))
+         if (tsize != (sf->s & (~FCEUSTATE_FLAGS)))
             return(0);
          return(sf);
       }
@@ -176,11 +179,14 @@ static int ReadStateChunk(memstream_t *mem, SFORMAT *sf, int size)
 
       if((tmp = CheckS(sf, tsize, toa)))
       {
-         memstream_read(mem, (uint8 *)tmp->v, tmp->s & (~RLSB));
+         if (tmp->s & FCEUSTATE_INDIRECT)
+             memstream_read(mem, *(uint8**)tmp->v, tmp->s & (~FCEUSTATE_FLAGS));
+         else
+             memstream_read(mem, (uint8*)tmp->v, tmp->s & (~FCEUSTATE_FLAGS));
 
 #ifdef MSB_FIRST
          if(tmp->s & RLSB)
-            FlipByteOrder((uint8 *)tmp->v, tmp->s & (~RLSB));
+            FlipByteOrder((uint8 *)tmp->v, tmp->s & (~FCEUSTATE_FLAGS));
 #endif
       }
       else

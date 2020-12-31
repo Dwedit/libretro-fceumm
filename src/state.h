@@ -40,7 +40,13 @@ typedef struct {
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void));
 void AddExState(void *v, uint32 s, int type, char *desc);
 
+/* indicates that the value is a multibyte integer that needs to be put in the correct byte order */
 #define FCEUSTATE_RLSB      0x80000000
+/* void*v is actually a void** which will be indirected before reading */
+#define FCEUSTATE_INDIRECT            0x40000000
+/* all FCEUSTATE flags together so that we can mask them out and get the size */
+#define FCEUSTATE_FLAGS (FCEUSTATE_RLSB|FCEUSTATE_INDIRECT)
+
 
 void FCEU_DrawSaveStates(uint8 *XBuf);
 
